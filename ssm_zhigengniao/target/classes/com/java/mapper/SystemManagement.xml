@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.java.mapper.SystemManagementMapper">
+
+    <resultMap id="oneMenuMap" type="com.java.pojo.OneMenu">
+        <result property="oneId" javaType="Long" column="oneId"></result>
+        <result property="oneText" javaType="String" column="oneText"></result>
+        <collection property="twoMenuList" ofType="com.java.pojo.TwoMenu">
+            <result property="twoId" javaType="Long" column="twoId"></result>
+            <result property="twoText" javaType="String" column="twoText"></result>
+            <result property="parentId" javaType="Long" column="parentId"></result>
+        </collection>
+    </resultMap>
+
+    <!--改变角色的状态(功能未实现)-->
+    <update id="updateStatus" parameterType="Long" statementType="CALLABLE">
+        CALL pro_rroles (
+        #{id,mode=IN,jdbcType=BIGINT}
+        )
+
+    </update>
+
+    <!--往角色权限表中新增数据-->
+     <insert id="addRolesAuthority">
+         INSERT INTO system_role_authority VALUES
+         <foreach collection="authorityAttr" item="temp" separator=",">
+             (null ,#{roleId},#{temp})
+         </foreach>
+
+     </insert>
+
+    <!--查询一级菜单(视图)-->
+    <select id="selectOneMenu" resultMap="oneMenuMap">
+        SELECT * FROM onemenu ONE INNER JOIN twomenu two ON one.oneId=two.parentId
+    </select>
+</mapper>
